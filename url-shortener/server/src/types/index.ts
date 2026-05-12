@@ -1,11 +1,9 @@
 import { Request } from "express";
+import { Session, User } from "better-auth";
 
 export interface AuthenticatedRequest extends Request {
-  user?: {
-    id: string;
-    email: string;
-    tier: string;
-  };
+  user?: User;
+  session?: Session;
 }
 
 export interface ApiResponse<T = unknown> {
@@ -24,12 +22,4 @@ export interface CreateUrlBody {
   originalUrl: string;
   customAlias?: string;
   expiresAt?: string;
-}
-
-export interface JwtPayload {
-  id: string;
-  email: string;
-  tier: string;
-  iat?: number;
-  exp?: number;
 }

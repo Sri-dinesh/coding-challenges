@@ -1,5 +1,4 @@
 import { Router } from "express";
-import { authenticate } from "../middleware/auth";
 import { getUrlAnalytics } from "../services/analytics.service";
 import { AuthenticatedRequest } from "../types";
 import { Response, NextFunction } from "express";
@@ -8,7 +7,6 @@ const router = Router();
 
 router.get(
   "/:urlId",
-  authenticate,
   async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
       const data = await getUrlAnalytics(req.params.urlId, req.user!.id);

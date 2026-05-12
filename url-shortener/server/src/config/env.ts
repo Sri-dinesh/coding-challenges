@@ -14,8 +14,10 @@ export const env = {
   NODE_ENV: process.env.NODE_ENV || "development",
   PORT: parseInt(process.env.PORT || "5000", 10),
   DATABASE_URL: requireEnv("DATABASE_URL"),
-  JWT_SECRET: requireEnv("JWT_SECRET"),
-  JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN || "7d",
+
+  BETTER_AUTH_SECRET: requireEnv("BETTER_AUTH_SECRET"),
+  BETTER_AUTH_URL: process.env.BETTER_AUTH_URL || "http://localhost:5000",
+
   BASE_URL: process.env.BASE_URL || "http://localhost:5000",
   CLIENT_URL: process.env.CLIENT_URL || "http://localhost:3000",
   RATE_LIMIT_WINDOW_MS: parseInt(
