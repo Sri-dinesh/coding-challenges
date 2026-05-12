@@ -9,7 +9,7 @@ import { errorHandler } from "./middleware/errorHandler";
 import { redirectUrl } from "./controllers/url.controller";
 
 import urlRoutes from "./routes/url.routes";
-import { he } from "zod/locales";
+import analyticalRoutes from "./routes/analytics.routes";
 
 const app = express();
 app.use(helment());
