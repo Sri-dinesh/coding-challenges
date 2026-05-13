@@ -16,7 +16,7 @@ async function startServer() {
     });
 
     const shutdown = async (signal: string) => {
-      logger.info(`${signal} received. Shuttin down gracefullyyy...`);
+      logger.info(`${signal} received. Shutting down gracefully...`);
       server.close(async () => {
         await prisma.$disconnect();
         logger.info("Server closed. DB disconnected.");

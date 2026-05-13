@@ -1,10 +1,10 @@
 export class AppError extends Error {
   constructor(
-    public messsage: string,
+    public message: string,
     public statusCode: number = 500,
     public isOperational: boolean = true,
   ) {
-    super(messsage);
+    super(message);
     this.name = this.constructor.name;
     Error.captureStackTrace(this, this.constructor);
   }
@@ -31,7 +31,7 @@ export class ConflictError extends AppError {
     super(message, 409);
   }
 }
-export class RateLimtiError extends AppError {
+export class RateLimitError extends AppError {
   constructor(message = "Too many requests") {
     super(message, 429);
   }

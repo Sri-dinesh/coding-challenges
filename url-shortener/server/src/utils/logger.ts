@@ -1,4 +1,4 @@
-import { env } from "node:process";
+import { env } from "../config/env";
 
 type LogLevel = "info" | "warn" | "error" | "debug";
 

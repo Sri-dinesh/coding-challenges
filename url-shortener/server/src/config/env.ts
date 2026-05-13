@@ -1,5 +1,4 @@
 import dotenv from "dotenv";
-import { required } from "zod/mini";
 dotenv.config();
 
 function requireEnv(key: string): string {

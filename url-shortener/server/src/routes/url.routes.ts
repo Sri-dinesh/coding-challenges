@@ -3,8 +3,8 @@ import {
   createUrl,
   getMyUrls,
   deactivateUrl,
-} from "@/controllers/url.controller";
-import { createUrlLimiter } from "@/middleware/rateLimiter";
+} from "../controllers/url.controller";
+import { createUrlLimiter } from "../middleware/rateLimiter";
 import { authenticate, optionalAuth } from "../middleware/auth";
 
 const router = Router();

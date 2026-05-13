@@ -1,7 +1,7 @@
 import { prisma } from "../config/database";
-import { generateShortCode } from "@/utils/base62";
-import { NotFoundError, ConflictError, ValidationError } from "@/utils/errors";
-import { CreateUrlBody } from "@/types";
+import { generateShortCode } from "../utils/base62";
+import { NotFoundError, ConflictError, ValidationError } from "../utils/errors";
+import { CreateUrlBody } from "../types";
 
 function isValidUrl(url: string): boolean {
   try {
@@ -26,6 +26,8 @@ export async function createShortUrl(body: CreateUrlBody, userId?: string) {
     throw new ValidationError("URl not allowed");
   }
 
+  let shortCode: string;
+
   if (customAlias) {
     if (!/^[a-zA-Z0-9_-]{3,30}$/.test(customAlias)) {
       throw new ValidationError(
@@ -36,39 +38,34 @@ export async function createShortUrl(body: CreateUrlBody, userId?: string) {
       where: { shortCode: customAlias },
     });
     if (existing) throw new ConflictError("Custom alias already taken");
+    shortCode = customAlias;
+  } else {
+    const count = await prisma.url.count();
+    shortCode = generateShortCode(count, 6);
+
+    const collision = await prisma.url.findUnique({ where: { shortCode } });
+    if (collision) {
+      shortCode = generateShortCode(count + 1, 6);
+    }
   }
+
   const url = await prisma.url.create({
     data: {
-      shortCode: customAlias ?? "",
+      shortCode,
+      customAlias: customAlias ?? null,
       originalUrl,
       userId: userId ?? null,
       expiresAt: expiresAt ? new Date(expiresAt) : null,
     },
   });
-  if (!customAlias) {
-    const count = await prisma.url.count();
-    const shortCode = generateShortCode(count, 6);
-
-    const collision = await prisma.url.findUnique({ where: { shortCode } });
-    const finalCode = collision ? generateShortCode(count + 1, 6) : shortCode;
-
-    await prisma.url.update({
-      where: { id: url.id },
-      data: { shortCode: finalCode },
-    });
-
-    return prisma.url.findUniqueOrThrow({ where: { id: url.id } });
-  }
 
   return url;
 }
 
 export async function resolveShortCode(shortCode: string) {
-  const url = await prisma.url.findUnique({
-    where: { shortCode, isActive: true },
-  });
+  const url = await prisma.url.findUnique({ where: { shortCode } });
 
-  if (!url) throw new NotFoundError("Short URL not found");
+  if (!url || !url.isActive) throw new NotFoundError("Short URL not found");
 
   if (url.expiresAt && url.expiresAt < new Date()) {
     throw new NotFoundError("This short URL has expired");
@@ -94,7 +91,7 @@ export async function getUserUrls(userId: string, page = 1, limit = 20) {
     prisma.url.count({ where: { userId } }),
   ]);
 
-  return { urls, total, page, limit, totalpages: Math.ceil(total / limit) };
+  return { urls, total, page, limit, totalPages: Math.ceil(total / limit) };
 }
 
 export async function deleteUrl(urlId: string, userId: string) {
